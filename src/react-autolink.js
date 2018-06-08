@@ -1,39 +1,39 @@
-import React  from 'react';
+import React from 'react';
 import assign from 'object-assign';
 
 let ReactAutolink = () => {
-  const delimiter = /((?:https?:\/\/)?(?:(?:[a-z0-9]?(?:[a-z0-9\-]{1,61}[a-z0-9])?\.[^\.|\s])+[a-z\.]*[a-z]+|(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})(?::\d{1,5})*[a-z0-9.,_\/~#&=;%+?\-\\(\\)]*)/ig;
+	const delimiter = /((?:https?:\/\/)?(?:(?:[a-z0-9]?(?:[a-z0-9\-]{1,61}[a-z0-9])?\.[^\.|\s])+[a-z\.]*[a-z]+|(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})(?::\d{1,5})*[a-z0-9.,_\/~#&=;%+?\-\\(\\)]*)/gi;
 
-  let strStartsWith = (str, prefix) => {
-    return str.slice(0, prefix.length) === prefix;
-  };
+	let strStartsWith = (str, prefix) => {
+		return str.slice(0, prefix.length) === prefix;
+	};
 
-  return {
-    autolink(text, options = {}) {
-      if (!text) return [];
+	return {
+		autolink(text, options = {}) {
+			if (!text) return [];
 
-      return text.split(delimiter).map(word => {
-        let match = word.match(delimiter);
-        if (match) {
-          let url = match[0];
+			return text.split(delimiter).map((word, index) => {
+				let match = word.match(delimiter);
+				if (match) {
+					let url = match[0];
 
-          let segments = url.split('/');
-          // no scheme given, so check host portion length
-          if (segments[1] !== '' && segments[0].length < 5) {
-            return word;
-          }
+					let segments = url.split('/');
+					// no scheme given, so check host portion length
+					if (segments[1] !== '' && segments[0].length < 5) {
+						return word;
+					}
 
-          return React.createElement(
-            'a',
-            assign({href: strStartsWith(url, 'http') ? url : `http://${url}`}, options),
-            url
-          );
-        } else {
-          return word;
-        }
-      });
-    }
-  };
+					return React.createElement(
+						'a',
+						assign({ href: strStartsWith(url, 'http') ? url : `http://${url}`, key: index }, options),
+						url
+					);
+				} else {
+					return React.createElement('span', { key: index }, word);
+				}
+			});
+		},
+	};
 };
 
 export default ReactAutolink();
